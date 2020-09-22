@@ -1,6 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import {getColors as AppColors} from '../styles/colors';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const size = 50;
 
@@ -26,10 +27,14 @@ const styles = StyleSheet.create({
 });
 
 const FAB = props => {
-  const { fabStyle, textStyle, text, ...otherProps } = props;
+  const { fabStyle, textStyle, icon, ...otherProps } = props;
   return (
     <TouchableOpacity style={[styles.container, fabStyle]} {...otherProps}>
-      <Text style={textStyle}>{text}</Text>
+      <Ionicons
+        name={icon}
+        size={20}
+        color={AppColors.white}
+        style={styles.icon}/>
     </TouchableOpacity>
   );
 };

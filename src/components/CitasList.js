@@ -33,7 +33,7 @@ import {constantes} from '../data/constantes';
         console.log(estacion)
 }*/
 
-const CitasList = ({citas, onPressItem}) => {
+function CitasList ({citas, onPressItem}) {
     
     return (
         <ScrollView style={styles.list}>
@@ -45,11 +45,11 @@ const CitasList = ({citas, onPressItem}) => {
                         </View>
                         <View>
                             <View style={styles.text_container}>
-                                <Text style={styles.text_title}>Fecha: </Text>
+                                <Text style={styles.text_title}>Hora: </Text>
                                 <Text>{cita.fecha}</Text>
                             </View>
                             <View style={styles.text_container}>
-                                <Text style={styles.text_title}>Hora: </Text>
+                                <Text style={styles.text_title}>Fecha: </Text>
                                 <Text>{cita.hora}</Text>
                             </View>
                             <View style={styles.text_container}>
@@ -88,10 +88,6 @@ const styles = StyleSheet.create({
         width: 80,
         marginTop: -8,
     },
-    img:{
-        flex: 1,
-        resizeMode: "contain",
-    }
 });
 
 export default CitasList;

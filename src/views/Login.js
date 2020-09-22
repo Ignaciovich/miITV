@@ -12,6 +12,7 @@ import {
 import {getColors as AppColors} from '../styles/colors';
 import {constantes} from '../data/constantes';
 
+
 export default class Login extends Component {
     constructor(props){
         super(props);
@@ -45,6 +46,7 @@ export default class Login extends Component {
             .then(data => { 
                 if (data.id){
                     constantes.usuario = data;
+                    console.log(constantes.usuario);
                     this.props.navigation.navigate('Tabs');
                 }else{
                     ToastAndroid.show("Usuario o contraseña erróneos.", ToastAndroid.SHORT);

@@ -6,8 +6,8 @@ import {
     ToastAndroid,
     View,
 } from 'react-native';
-import {CitasList} from '../components';
-import {getCitasByUsuario, getCitasByCoche} from '../data/Citas';
+import {CitasList, FAB} from '../components';
+import {getColors as AppColors} from '../styles/colors';
 import {constantes} from '../data/constantes';
 
 export default class CitasTab extends Component{
@@ -53,7 +53,7 @@ export default class CitasTab extends Component{
         }else{
             return(
                 <View>
-                    <Text>No hay ninguna ITV realizada con este usuario.</Text>
+                    <Text>No hay ninguna ITV realizada con este vehículo.</Text>
                 </View>
             );
         }
@@ -63,6 +63,12 @@ export default class CitasTab extends Component{
         return (
             <SafeAreaView style={styles.container}>
                 {this.comprobarITV()}
+                <FAB
+                    icon="ios-refresh"
+                    fabStyle={{backgroundColor: AppColors.buttonLogin}}
+                    textStyle={{color: AppColors.black}}
+                    onPress={this.handleRefresh}
+                />
             </SafeAreaView>
         );
     };

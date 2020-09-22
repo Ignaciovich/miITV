@@ -4,11 +4,9 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   TextInput,
   ScrollView,
   ToastAndroid,
-  BackHandler,
 } from "react-native";
 import { getColors as AppColors } from "../styles/colors";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -26,8 +24,9 @@ export default class PerfilTab extends Component {
       nombre: constantes.usuario.nombre,
       telefono: constantes.usuario.telefono,
       direccion: constantes.usuario.direccion,
-      contraseña: "",
-      contraseñaRepe: "",
+      passwordAntigua: constantes.usuario.password,
+      passwordRepe: "",
+      passwordNueva: "",
     };
   }
 
@@ -52,17 +51,16 @@ export default class PerfilTab extends Component {
   }
 
   actualizarDatos = () => {
-    const {nombre, telefono, direccion} = this.state;
+    const {id, nombre, passwordAntigua, telefono, direccion} = this.state;
 
     if (nombre !== ""){
       const usuario = {
-        "id": this.state.id,
-        "correo": constantes.usuario.correo,
-        "password:": constantes.usuario.password,
+        "id": id,
+        "password": passwordAntigua,
         "nombre": nombre,
         "telefono": telefono,
         "direccion": direccion,
-      }
+      };
 
       fetch("http://"+constantes.ip+":8080/itvApp/executeUpdateUser ", {
           method: "PUT",
@@ -74,40 +72,61 @@ export default class PerfilTab extends Component {
       }).then(function(response){  
           return response.json();   
       }).then(function(data){ 
-          console.log(data)
+          console.log(data);
       });
+      this.changeStatus(0);
+      ToastAndroid.show("Datos actualizados correctamente", ToastAndroid.SHORT);
+    }else{
+      ToastAndroid.show("La contraseña nueva no puede ser iguala la antigua", ToastAndroid.SHORT);
     }    
   }
 
-  actualizarContraseña = () => {
-    const {contraseña, contraseñaRepe} = this.state;
+  actualizarPassword = () => {
+    const {id, nombre, passwordAntigua, passwordRepe, passwordNueva, telefono, direccion} = this.state;
+    
+    if (passwordAntigua !== ""){
+      if (passwordNueva !== ""){
+        if (/\d/.test(passwordNueva)){
+          if (passwordAntigua === passwordRepe){
+            if (passwordRepe !== passwordNueva){
+              const usuario = {
+                "id": id,
+                "password": passwordNueva,
+                "nombre": nombre,
+                "telefono": telefono,
+                "direccion": direccion,
+                }
+                
+              fetch("http://"+constantes.ip+":8080/itvApp/executeUpdateUser ", {
+                method: "PUT",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }, 
+              body:  JSON.stringify(usuario),
+              }).then(function(response){  
+                  return response.json();   
+              }).then(function(data){ 
+                  console.log(data)
+              });
 
-    if (contraseña !== "" && contraseñaRepe !== ""){
-      if (contraseña === contraseñaRepe){
-        if (/\d/.test(contraseña)){
-          const usuario = {
-            "id": this.state.id,
-          "correo": constantes.usuario.correo,
-          "password:": contraseña,
-          "nombre": constantes.usuario.nombre,
-          "telefono": constantes.usuario.telefono,
-          "direccion": constantes.usuario.direccion,
+              this.setState({passwordAntigua: passwordNueva, passwordNueva: "", passwordRepe: ""});
+              this.changeStatus(1);
+              ToastAndroid.show("Datos actualizados correctamente", ToastAndroid.SHORT);
+            }else{
+              ToastAndroid.show("La contraseña nueva no puede ser iguala la antigua", ToastAndroid.SHORT);
+            }
+          }else{
+            ToastAndroid.show("La contraseña nueva no puede ser iguala la antigua", ToastAndroid.SHORT);
           }
-          
-          fetch("http://"+constantes.ip+":8080/itvApp/executeUpdateUser ", {
-            method: "PUT",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }, 
-          body:  JSON.stringify(usuario),
-          }).then(function(response){  
-              return response.json();   
-          }).then(function(data){ 
-              console.log(data)
-          });
+        }else{
+          ToastAndroid.show("La contraseña nueva no puede ser iguala la antigua", ToastAndroid.SHORT);
         }
+      }else{
+        ToastAndroid.show("La contraseña nueva no puede ser iguala la antigua", ToastAndroid.SHORT);
       }
+    }else{
+      ToastAndroid.show("La contraseña nueva no puede ser iguala la antigua", ToastAndroid.SHORT);
     }
   }
 
@@ -135,22 +154,22 @@ export default class PerfilTab extends Component {
             name={this.state.info_arrow}
             size={20}
             color={AppColors.white}
-            style={{marginLeft: 200}}
+            style={{marginLeft: "54%"}}
           />
         </TouchableOpacity>
         {this.state.edit_info && (
           <View style={styles.subcontainer}>
             <Text style={styles.title}>Nombre:</Text>
             <View style={styles.view_contorno}>
-              <TextInput onChangeText={(value) => this.setState({nombre: value})}>{this.state.nombre}</TextInput>
+              <TextInput style={styles.input} onChangeText={(value) => this.setState({nombre: value})}>{this.state.nombre}</TextInput>
             </View>
             <Text style={styles.title}>Teléfono:</Text>
             <View style={styles.view_contorno}>
-              <TextInput onChangeText={(value) => this.setState({telefono: value})}>{this.state.telefono}</TextInput>
+              <TextInput style={styles.input} onChangeText={(value) => this.setState({telefono: value})}>{this.state.telefono}</TextInput>
             </View>
             <Text style={styles.title}>Dirección:</Text>
             <View style={styles.view_contorno}>
-              <TextInput onChangeText={(value) => this.setState({direccion: value})}>{this.state.direccion}</TextInput>
+              <TextInput style={styles.input} onChangeText={(value) => this.setState({direccion: value})}>{this.state.direccion}</TextInput>
             </View>
             <TouchableOpacity style={styles.button} onPress={this.actualizarDatos}>
               <Text style={styles.button_text}>Guardar cambios</Text>
@@ -169,25 +188,25 @@ export default class PerfilTab extends Component {
             color={AppColors.white}
             style={styles.icon}
           />
-          <Text style={styles.text}>Nueva contraseña.</Text>
+          <Text style={styles.text}>Cambiar contraseña.</Text>
           <Ionicons
             name={this.state.pass_arrow}
             size={20}
             color={AppColors.white}
-            style={{marginLeft: 200}}
+            style={{marginLeft: "50%"}}
           />
         </TouchableOpacity>
         {this.state.edit_pass && (
           <View style={styles.subcontainer}>
             <Text style={styles.title}>Contraseña actual:</Text>
             <View style={styles.view_contorno}>
-              <TextInput secureTextEntry onChangeText={(value) => this.setState({contraseña: value})}>{this.state.contraseña}</TextInput>
+              <TextInput style={styles.input} autoCapitalize="none" secureTextEntry onChangeText={(value) => this.setState({passwordRepe: value})}>{this.state.passwordRepe}</TextInput>
             </View>
             <Text style={styles.title}>Nueva contraseña:</Text>
             <View style={styles.view_contorno}>
-              <TextInput secureTextEntry onChangeText={(value) => this.setState({contraseñaRepe: value})}>{this.state.contraseñaRepe}</TextInput>
+              <TextInput style={styles.input} autoCapitalize="none" secureTextEntry onChangeText={(value) => this.setState({passwordNueva: value})}>{this.state.passwordNueva}</TextInput>
             </View>
-            <TouchableOpacity style={styles.button} onPress={this.actualizarContraseña}>
+            <TouchableOpacity style={styles.button} onPress={this.actualizarPassword}>
               <Text style={styles.button_text}>Guardar cambios</Text>
             </TouchableOpacity>
           </View>
@@ -244,43 +263,7 @@ const styles = StyleSheet.create({
   button_text:{
     color: AppColors.white,
   },
+  input: {
+    paddingHorizontal: 10,
+  }
 });
-
-/*
-container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  button_container: {
-    flexDirection: "row",
-  },
-  text: {
-    margin: 10,
-  },
-  logoutText: {
-    color: "#FF0000",
-  },
-  icon: {
-    margin: 10,
-  },
-  view_contorno: {
-    backgroundColor: "#d9d9d9",
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  text: {
-    padding: 5,
-  },
-  button: {
-    margin: 15,
-    height: 40,
-    borderRadius: 5,
-    backgroundColor: AppColors.buttonLogin,
-    color: AppColors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button_text:{
-    color: AppColors.white,
-  },
-*/

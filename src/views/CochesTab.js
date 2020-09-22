@@ -4,7 +4,6 @@ import {
     SafeAreaView,
 } from 'react-native';
 import {CochesList, FAB} from '../components';
-import {getCochesByDueño} from '../data/Coches';
 import {getColors as AppColors} from '../styles/colors';
 import {constantes} from '../data/constantes';
 
@@ -48,15 +47,40 @@ export default class CochesTab extends Component{
         this.props.navigation.navigate('Coche_nuevo');
     }
 
+    handleRefresh = () => {
+        fetch("http://"+constantes.ip+":8080/itvApp/getCocheByOwner", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body:  JSON.stringify(this.state.usuario.id),
+        })
+        .then(function(response){  
+            return response.json();   
+        })
+        .then(data => { 
+            if (data){
+                this.setState({coches: data})
+            }
+        });
+    }
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
                 <CochesList coches={this.state.coches} onPressItem={this.onPressItem}/>
                 <FAB
-                    text="+"
+                    icon="ios-add"
                     fabStyle={{backgroundColor: AppColors.buttonLogin}}
                     textStyle={{color: AppColors.black}}
                     onPress={this.handleAdd}
+                />
+                <FAB
+                    icon="ios-refresh"
+                    fabStyle={{backgroundColor: AppColors.buttonLogin, bottom: 100}}
+                    textStyle={{color: AppColors.black}}
+                    onPress={this.handleRefresh}
                 />
             </SafeAreaView>
         );

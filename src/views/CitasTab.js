@@ -6,9 +6,10 @@ import {
     ToastAndroid,
     View,
 } from 'react-native';
+import {CochesList, FAB} from '../components';
 import {CitasList} from '../components';
-import {getCitasByUsuario, getCitasByCoche} from '../data/Citas';
 import {constantes} from '../data/constantes';
+import {getColors as AppColors} from '../styles/colors';
 
 export default class CitasTab extends Component{
     constructor(props){
@@ -40,27 +41,6 @@ export default class CitasTab extends Component{
         this.props.navigation.navigate('Cita', {cita: param});
     }
 
-    /*cargarEstacion = (param) => {
-        var estacion = ""
-
-        fetch("http://"+constantes.ip+":8080/itvApp/getEstacionById", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body:  JSON.stringify(param.estacion),
-            })
-            .then(function(response){  
-                return response.json();   
-            })
-            .then(data => 
-                estacion = data.nombre
-            );
-
-        return estacion;
-    }*/
-
     comprobarITV = () => {
         if (this.state.citas.length > 0){ 
             return(
@@ -74,11 +54,33 @@ export default class CitasTab extends Component{
             );
         }
     }
+    
+    handlerUpdate = () => {
+        fetch("http://"+constantes.ip+":8080/itvApp/getCitaByUsuario", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:  JSON.stringify(constantes.usuario.id),
+            })
+            .then(function(response){  
+                return response.json();   
+            })
+            .then(data => { 
+                this.setState({citas: data});
+        });
+    }
 
     render() {
         return (
             <SafeAreaView style={styles.container}>
                 {this.comprobarITV()}
+                <FAB 
+                    icon="ios-refresh"
+                    fabStyle={{backgroundColor: AppColors.buttonLogin}}
+                    textStyle={{color: AppColors.black}}
+                    onPress={this.handleUpdate}/>
             </SafeAreaView>
         );
     };

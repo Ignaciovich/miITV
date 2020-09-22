@@ -14,6 +14,7 @@ import {
 import {getColors as AppColors} from '../styles/colors';
 import * as ImagePicker from 'expo-image-picker';
 import {constantes} from '../data/constantes';
+import {crearCoche} from '../data/Coche';
 
 export default class AñadirCoche extends Component{
     constructor(props){
@@ -63,15 +64,15 @@ export default class AñadirCoche extends Component{
                     if (matricula.length == 8){
                         if (adquisicion !== ""){
                             var coche = {
-                                "matricula": matricula.toUpperCase(),
+                                "matricula": matricula,
                                 "marca": marca,
                                 "modelo": modelo,
                                 "owner": this.state.usuario.id,
                                 "tipo": tipo,
-                                "descripcion": descripcion !== ""? descripcion:null,
+                                "descripcion": descripcion !== ""? descripcion : null,
                                 "adquisicion": adquisicion,
                             }
-                    
+                            
                             fetch("http://"+constantes.ip+":8080/itvApp/createCoche", {
                                 method: "POST",
                                 headers: {
@@ -81,12 +82,13 @@ export default class AñadirCoche extends Component{
                                 body:  JSON.stringify(coche),
                             })
                             .then(function(response){  
+                                console.log(response.status);
                                 return response.json();   
                             })
                             .then(data => { 
-                                console.log(data)
+                                console.log(data);
                             });
-                    
+
                             this.props.navigation.goBack();
                         }else{
                             ToastAndroid.show("Rellene el campo de fecha adquisición, por favor.", ToastAndroid.SHORT);
@@ -122,7 +124,7 @@ export default class AñadirCoche extends Component{
                     </View>
                     <Text style={styles.title}>Matrícula:</Text>
                     <View style={styles.view_contorno}>
-                        <TextInput onChangeText={text => this.setState({matricula: text})} style={styles.text} placeholder="Ej. 0000 AAA"></TextInput>
+                        <TextInput onChangeText={text => this.setState({matricula: text})} style={styles.text} placeholder="Ej. 0000 AAA" autoCapitalize="characters"></TextInput>
                     </View>
                     <Text style={styles.title}>Tipo:</Text>
                     <View style={{...styles.view_contorno, justifyContent: 'center',}}>

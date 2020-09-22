@@ -89,9 +89,11 @@ export default class CitaView extends Component{
 
     cargarCodigoQR = () => {
         if (this.state.cita.resultado == 0){
+            const cita = this.state.cita.id + "";
+
             return (
                 <QRCode
-                    value={this.state.cita}
+                    value={cita}
                     size={200}
                     bgColor={AppColors.black}
                     fgColor={AppColors.backgrounLogin}/>
