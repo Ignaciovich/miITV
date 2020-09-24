@@ -9,6 +9,7 @@ import {
     ToastAndroid,
 } from 'react-native';
 import {getColors as AppColors} from '../styles/colors';
+import {constantes} from '../data/constantes';
 
 export default class Signup extends Component{
     constructor(props){
@@ -29,36 +30,39 @@ export default class Signup extends Component{
         
         if (regex.test(email.toLowerCase()) && email !== ""){
             if (password === passwordRepeat && password !== ""){
-                if (password.length >= 8){
+                if (password.length >= 2){
                     if (/\d/.test(password)){
                         if (nombre !== ""){
-                            var usuario = {
-                                "id": null,
-                                "email": email,
-                                "password": password,
-                                "nombre": nombre,
-                                "telefono": telefono,
-                                "direccion": direccion,
-                            }
-
-                            fetch("http://"+constantes.ip+":8080/itvApp/createUser ", {
-                                method: "POST",
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json'
-                                }, 
-                                body:  JSON.stringify(usuario),
-                            }).then(function(response){  
-                                return response.json();   
-                            }).then(function(data){ 
-                                console.log(data)
-                                if (!data.status){
-                                    ToastAndroid.show("Usuario registrado con éxito.", ToastAndroid.SHORT);
-                                    this.props.navigation.goBack();
-                                }else{
-                                    ToastAndroid.show("Ya existe un usuario con ese correo.", ToastAndroid.SHORT);
+                            if (telefono.length == 9 || telefono.length == 0){
+                                var usuario = {
+                                    "id": null,
+                                    "email": email,
+                                    "password": password,
+                                    "nombre": nombre,
+                                    "telefono": telefono,
+                                    "direccion": direccion,
                                 }
-                            });
+
+                                fetch("http://"+constantes.ip+":8080/itvApp/createUser ", {
+                                    method: "POST",
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    }, 
+                                    body:  JSON.stringify(usuario),
+                                }).then(response => {  
+                                    if (response.status == 200){
+                                        ToastAndroid.show("Usuario insertado con éxito.", ToastAndroid.SHORT);
+                                        this.props.navigation.goBack();
+                                    }else{
+                                        ToastAndroid.show("Ya existe un usuario con ese email.", ToastAndroid.SHORT);
+                                    }
+                                }).then(function(data){
+                                    return(data);
+                                });
+                            }else{
+                                ToastAndroid.show("Introduzca un teléfono correcto no lo introduzca.", ToastAndroid.SHORT);
+                            }
                         }else{
                             ToastAndroid.show("Introduzca su nombre, por favor.", ToastAndroid.SHORT);
                         }
@@ -97,6 +101,7 @@ export default class Signup extends Component{
                         placeholder="Contraseña"
                         placeholderTextColor= {AppColors.inputPlaceHolder}
                         returnKeyType="next"
+                        onSubmitEditing={() => this.passwordRepeatInput.focus()}
                         autoCapitalize="none"
                         secureTextEntry
                         autoCorrect={false}
@@ -108,6 +113,7 @@ export default class Signup extends Component{
                         placeholder="Repetir contraseña"
                         placeholderTextColor= {AppColors.inputPlaceHolder}
                         returnKeyType="next"
+                        onSubmitEditing={() => this.nameInput.focus()}
                         autoCapitalize="none"
                         secureTextEntry
                         autoCorrect={false}
@@ -130,7 +136,7 @@ export default class Signup extends Component{
                         placeholder="Teléfono"
                         placeholderTextColor= {AppColors.inputPlaceHolder}
                         returnKeyType="next"
-                        onSubmitEditing={() => this.surnameInput.focus()}
+                        onSubmitEditing={() => this.direccionInput.focus()}
                         autoCorrect={false}
                         onChangeText= {(value) => this.setState({telefono: value})}
                         ref = {(input) => this.telefonoInput = input}

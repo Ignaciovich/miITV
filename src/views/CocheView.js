@@ -8,6 +8,7 @@ import {
     Image,
     ScrollView,
     BackHandler,
+    ToastAndroid,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getColors as AppColors } from "../styles/colors";
@@ -35,7 +36,7 @@ export default class CocheView extends Component{
             //Realizar edicion de datos
             this.setState({titulo: "EDITAR"})
             this.setState({color: AppColors.orange})
-
+            this.editarCoche();
         }
     }
 
@@ -52,19 +53,55 @@ export default class CocheView extends Component{
             },
             body:  JSON.stringify(coche),
         })
-        .then(function(response){  
-            return response.json();   
+        .then(response => {  
+            if (response.status == 200){
+                ToastAndroid.show("Vehículo eliminado correctamente.", ToastAndroid.SHORT);
+                this.props.navigation.goBack();
+            }else{
+                ToastAndroid.show("No se ha podido eliminar el vehículo, pruebe de nuevo más tarde.", ToastAndroid.SHORT);
+            }
         })
         .then(data => { 
             console.log(data)
         });
-
-        this.props.navigation.goBack();
     };
 
     onPressITV = () => {
         this.props.navigation.navigate('CitasCoche', {coche: this.state.coche});
     };
+
+    editarCoche = () => {
+        const {coche} = this.state;
+
+        const car = {
+            "matricula": coche.matricula,
+            "marca": coche.marca,
+            "modelo": coche.modelo,
+            "owner": coche.owner,
+            "tipo": coche.tipo,
+            "descripcion": coche.descripcion,
+            "adquisicion": coche.adquisicion,
+        }
+
+        fetch("http://"+constantes.ip+":8080/itvApp/executeUpdateCoche", {
+            method: "PUT",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:  JSON.stringify(car),
+        })
+        .then(response => {  
+            if (response.status == 200){
+                ToastAndroid.show("Vehículo actualizado con éxito.", ToastAndroid.SHORT);
+            }else{
+                ToastAndroid.show("No se ha podido actualizar el vehículo.", ToastAndroid.SHORT);
+            }
+        })
+        .then(data => { 
+            console.log(data)
+        });
+    }
 
     render() {
         return (
@@ -74,7 +111,7 @@ export default class CocheView extends Component{
                     <View style={styles.img_container}>
                         <Image style={styles.img} source={require('../../assets/coche.jpg')}/>
                     </View>
-                    <Text style={styles.subtitle}>Marca y modelo:</Text>
+                    <Text style={styles.subtitle}>Marca:</Text>
                     <View style={styles.view_contorno}>
                         <TextInput editable={this.state.editable} style={styles.text} onChangeText={text => this.setState(prevState => ({
                             coche: {

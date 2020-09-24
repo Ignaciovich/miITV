@@ -14,7 +14,6 @@ import {
 import {getColors as AppColors} from '../styles/colors';
 import * as ImagePicker from 'expo-image-picker';
 import {constantes} from '../data/constantes';
-import {crearCoche} from '../data/Coche';
 
 export default class AñadirCoche extends Component{
     constructor(props){
@@ -26,8 +25,8 @@ export default class AñadirCoche extends Component{
             matricula: "",
             descripcion: "",
             adquisicion: "",
-            //foto: {uri: "https://image.flaticon.com/icons/png/512/26/26561.png"},
-            foto: require("../../assets/silueta.png"),
+            foto: "https://image.flaticon.com/icons/png/512/26/26561.png",
+            //foto: require("../../assets/silueta.png"),
             tipo: 0,            
         }
     };
@@ -57,47 +56,47 @@ export default class AñadirCoche extends Component{
 
     añadirCoche = () => {
         const {marca, modelo, matricula, tipo, descripcion, adquisicion} = this.state;
+        const regex = /\d{4}\s[A-Z]{1,3}$/;
 
         if (marca !== ""){
             if (modelo !== ""){
-                if (matricula !== ""){
-                    if (matricula.length == 8){
-                        if (adquisicion !== ""){
-                            var coche = {
-                                "matricula": matricula,
-                                "marca": marca,
-                                "modelo": modelo,
-                                "owner": this.state.usuario.id,
-                                "tipo": tipo,
-                                "descripcion": descripcion !== ""? descripcion : null,
-                                "adquisicion": adquisicion,
-                            }
-                            
-                            fetch("http://"+constantes.ip+":8080/itvApp/createCoche", {
-                                method: "POST",
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json'
-                                },
-                                body:  JSON.stringify(coche),
-                            })
-                            .then(function(response){  
-                                console.log(response.status);
-                                return response.json();   
-                            })
-                            .then(data => { 
-                                console.log(data);
-                            });
-
-                            this.props.navigation.goBack();
-                        }else{
-                            ToastAndroid.show("Rellene el campo de fecha adquisición, por favor.", ToastAndroid.SHORT);
+                if (regex.test(matricula)){
+                    if (adquisicion !== ""){
+                        var coche = {
+                            "matricula": matricula,
+                            "marca": marca,
+                            "modelo": modelo,
+                            "owner": this.state.usuario.id,
+                            "tipo": tipo,
+                            "descripcion": descripcion !== ""? descripcion : null,
+                            "adquisicion": adquisicion,
                         }
+                        
+                        fetch("http://"+constantes.ip+":8080/itvApp/createCoche", {
+                            method: "POST",
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body:  JSON.stringify(coche),
+                        })
+                        .then(response => {  
+                            if (response.status == 200){
+                                ToastAndroid.show("Vehículo añadido con éxito.", ToastAndroid.SHORT);
+                                this.props.navigation.goBack();
+                            }else{
+                                ToastAndroid.show("Ha ocurrido un error inesperado, vuelva a intentarlo más tarde.", ToastAndroid.SHORT);
+                            }
+                        })
+                        .then(data => { 
+                            console.log(data);
+                        });
+
                     }else{
-                        ToastAndroid.show("La matrícula debe contener 4 letras, un espacio y 3 números.", ToastAndroid.SHORT);
+                        ToastAndroid.show("Rellene el campo de fecha adquisición, por favor.", ToastAndroid.SHORT);
                     }
                 }else{
-                    ToastAndroid.show("Rellene el campo de matrícula, por favor.", ToastAndroid.SHORT);
+                    ToastAndroid.show("Introduzca una matrícula correcta, por favor.", ToastAndroid.SHORT);
                 }
             }else{
                 ToastAndroid.show("Rellene el campo de modelo, por favor.", ToastAndroid.SHORT);
@@ -112,7 +111,7 @@ export default class AñadirCoche extends Component{
             <SafeAreaView style={styles.container}>
                 <ScrollView>
                     <TouchableOpacity onPress={this.seleccionarFoto}>
-                        <Image style={styles.img} source={this.state.foto}/>
+                        <Image style={styles.img} source={{uri: this.state.foto}}/>
                     </TouchableOpacity>
                     <Text style={styles.title}>Marca:</Text>
                     <View style={styles.view_contorno}>

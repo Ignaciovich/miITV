@@ -38,7 +38,7 @@ export default class CitaView extends Component{
             })
             .then(data => {
                 this.setState({coche: data})
-                console.log(this.state.coche)
+                this.setState({coche: data})
             }
         );
         

@@ -144,7 +144,7 @@ function TabNavigator(){
         >
             <Tab.Screen name="Mapas" component={MapasTab}/>
             <Tab.Screen name="Citas" component={CitasTab}/>
-            <Tab.Screen name="Coches" component={CochesTab}/>
+            <Tab.Screen name="Vehículos" component={CochesTab}/>
             <Tab.Screen name="Perfil" component={PerfilTab}/>
         </Tab.Navigator>
     )

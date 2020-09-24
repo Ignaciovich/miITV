@@ -17,27 +17,7 @@ export default class MapasTab extends Component {
       usuario: constantes.usuario,
       latitude: 0,
       longitude: 0,
-      markers: [
-          {
-            id: 1,
-            coordinate: {
-              latitude: 38.693053,
-              longitude: -4.108520,
-            },
-            nombre: "ITV Virgen de Gracia",
-            telefono: 123456789,
-          },
-          {
-            id: 2,
-            coordinate: {
-              latitude: 38.684820, 
-              longitude: -4.110761,
-            },
-            nombre: "ITV Ortega",
-            telefono: 123456789,
-          }
-      ],
-      pruebaMarkers: [],
+      markers: [],
       modalVisible: false,
       markerSelected: {
         id: 0,
@@ -52,7 +32,6 @@ export default class MapasTab extends Component {
   }
 
   componentDidMount = async() => {
-    var listaEstaciones = []
 
     let { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
@@ -63,20 +42,19 @@ export default class MapasTab extends Component {
         .then(response => response.json() )
         .then(data => {
           data.map((estacion) => {
-            this.state.pruebaMarkers.push({
+            this.state.markers.push({
               id: estacion.id, 
               coordinate:{
-                latitude: estacion.latitud+"",
-                longitude: estacion.longitud+"",
+                latitude: parseFloat(estacion.latitud),
+                longitude: parseFloat(estacion.longitud),
               },
               nombre: estacion.nombre,
               telefono: estacion.telefono,
             });
+            console.log(estacion)
           })
-          //this.setState({markers: listaEstaciones});
         })
         .catch(error => console.log(error));
-
     let location = await Location.getCurrentPositionAsync({});
     this.setState({latitude: location.coords.latitude, longitude: location.coords.longitude})
   }
@@ -96,8 +74,7 @@ export default class MapasTab extends Component {
     this.setState({modalVisible: false});
 
     if (index == 0){
-      console.log(this.state.markerSelected);
-      //this.props.navigation.navigate("Cita_nueva", {"usuario": this.state.usuario, "estacion": this.state.markerSelected});
+      this.props.navigation.navigate("Cita_nueva", {"estacion": this.state.markerSelected});
     }else{
       Communications.phonecall(this.state.markerSelected.telefono+"", true)
     }
@@ -200,4 +177,23 @@ const styles = StyleSheet.create({
 
 /*
   
+          {
+            id: 1,
+            coordinate: {
+              latitude: 38.693053,
+              longitude: -4.108520,
+            },
+            nombre: "ITV Virgen de Gracia",
+            telefono: 123456789,
+          },
+          {
+            id: 2,
+            coordinate: {
+              latitude: 38.684820, 
+              longitude: -4.110761,
+            },
+            nombre: "ITV Ortega",
+            telefono: 123456789,
+          }
+      
 */

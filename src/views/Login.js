@@ -26,7 +26,6 @@ export default class Login extends Component {
 
         if (this.state.email !== "" && this.state.password !== ""){
             var user = {
-                "id": null,
                 "email": this.state.email,
                 "password": this.state.password,
             }
@@ -41,12 +40,11 @@ export default class Login extends Component {
             body:  JSON.stringify(user),
             })
             .then(function(response){  
-                return response.json();   
+                return response.json();
             })
             .then(data => { 
                 if (data.id){
                     constantes.usuario = data;
-                    console.log(constantes.usuario);
                     this.props.navigation.navigate('Tabs');
                 }else{
                     ToastAndroid.show("Usuario o contraseña erróneos.", ToastAndroid.SHORT);
