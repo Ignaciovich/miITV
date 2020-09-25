@@ -80,18 +80,18 @@ export default class AñadirCoche extends Component{
                             },
                             body:  JSON.stringify(coche),
                         })
-                        .then(response => {  
-                            if (response.status == 200){
-                                ToastAndroid.show("Vehículo añadido con éxito.", ToastAndroid.SHORT);
-                                this.props.navigation.goBack();
-                            }else{
-                                ToastAndroid.show("Ha ocurrido un error inesperado, vuelva a intentarlo más tarde.", ToastAndroid.SHORT);
+                        .then(response => {
+                            if (response.status != 200){
+                                ToastAndroid.show("Has introducido una matrícula existente.", ToastAndroid.SHORT);
                             }
+                            return response.json;
                         })
                         .then(data => { 
-                            console.log(data);
+                            ToastAndroid.show("Vehículo añadido con éxito.", ToastAndroid.SHORT);
+                            this.props.navigation.goBack();
+                            return data;
                         });
-
+                        
                     }else{
                         ToastAndroid.show("Rellene el campo de fecha adquisición, por favor.", ToastAndroid.SHORT);
                     }

@@ -79,14 +79,14 @@ export default class AñadirCita extends Component {
       body:  JSON.stringify(cita),
       })
     .then(response => {  
-      if (response.status == 200){
-        ToastAndroid.show("Cita creada con éxito.", ToastAndroid.SHORT);
-        this.props.navigation.goBack();
-      }else{
+      if (response.status != 200){
         ToastAndroid.show("Ha ocurrido un error inesperado, vuelva a intentarlo más tarde.", ToastAndroid.SHORT);
       }
+      return response.json();
     })
     .then(data => { 
+      ToastAndroid.show("Cita creada con éxito.", ToastAndroid.SHORT);
+      this.props.navigation.goBack();
       return data;
     });
   }

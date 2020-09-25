@@ -1,6 +1,5 @@
 import 'react-native-gesture-handler';
 import React from 'react';
-import { View, Text, TabBarIOS } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -144,7 +143,7 @@ function TabNavigator(){
         >
             <Tab.Screen name="Mapas" component={MapasTab}/>
             <Tab.Screen name="Citas" component={CitasTab}/>
-            <Tab.Screen name="Vehículos" component={CochesTab}/>
+            <Tab.Screen name="Coches" component={CochesTab}/>
             <Tab.Screen name="Perfil" component={PerfilTab}/>
         </Tab.Navigator>
     )
